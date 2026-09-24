@@ -67,7 +67,7 @@ Manager > Hébergement > FTP/SSH > Ajouter un utilisateur FTP.
 2. Clic droit sur `install-windows.ps1` > Exécuter avec PowerShell.
    Si Windows refuse : ouvrir PowerShell et taper `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, puis relancer.
 3. Répondre aux questions : dossier local (par défaut `C:\Users\<toi>\Livraisons`), serveur FTP, utilisateur, mot de passe,
-   et chemin distant. Avec un utilisateur FTP limité au dossier `clients` (étape 4), le chemin distant est `/`.
+   et chemin distant. Avec l'utilisateur `lw48k_claude` limité à `/sites/client.nathandayer.ch`, le chemin distant est `/clients`.
 4. Le script installe rclone, teste la connexion, crée la tâche planifiée « Portail clients - synchro » (toutes les 5 minutes
    et à l'ouverture de session) et fait une première synchro.
 
