@@ -1,0 +1,672 @@
+<title>Espace clients Nathan Dayer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0a0a0a;
+    --surface: #151515;
+    --surface-2: #1e1e1e;
+    --line: #262626;
+    --line-2: #3a3a3a;
+    --text: #ffffff;
+    --muted: #999999;
+    --dim: #6b6b6b;
+    --accent: #BFBDAB;
+    --accent-ink: #0a0a0a;
+    --ok: #8fbf9a;
+    --warn: #d9b36a;
+    --bad: #d98a7a;
+    --radius: 14px;
+    --font: 'Dosis', 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 17px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 84px;
+  }
+  h1, h2, h3 { margin: 0; text-wrap: balance; font-weight: 600; }
+  p { margin: 0; }
+  button, a.btn {
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    background: var(--surface-2);
+    color: var(--text);
+    padding: 10px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    letter-spacing: .02em;
+    transition: background .15s, border-color .15s, transform .1s;
+  }
+  button:hover, a.btn:hover { border-color: var(--accent); }
+  button:active, a.btn:active { transform: scale(.985); }
+  button:focus-visible, a.btn:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .primary:hover { background: #d3d1c0; }
+  .ghost { background: transparent; }
+  .small { padding: 7px 12px; font-size: 15px; }
+  .eyebrow {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .muted { color: var(--muted); }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+  .view { display: none; }
+  .view.active { display: block; }
+  svg.i { width: 18px; height: 18px; flex: none; }
+
+  /* ---------- switcher ---------- */
+  .switch {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: rgba(10,10,10,.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  .switch .row { display: flex; gap: 6px; max-width: 720px; margin: 0 auto; }
+  .switch .label { display: none; }
+  .switch button { flex: 1; justify-content: center; padding: 9px 6px; font-size: 14px; background: transparent; border-color: var(--line); }
+  .switch button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  @media (min-width: 600px) {
+    .switch .row { align-items: center; }
+    .switch .label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .18em; color: var(--dim); margin-right: 8px; white-space: nowrap; }
+  }
+
+  /* ---------- toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%) translateY(12px);
+    background: var(--accent); color: var(--accent-ink);
+    padding: 10px 18px; border-radius: 999px; font-weight: 600;
+    opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 60;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- password ---------- */
+  .gate {
+    min-height: calc(100vh - 84px);
+    display: grid; place-items: center;
+    padding: 40px 16px;
+  }
+  .gate-card { width: 100%; max-width: 380px; display: grid; gap: 28px; text-align: center; }
+  .logo-client {
+    width: 88px; height: 88px; border-radius: 22px; margin: 0 auto;
+    background: var(--surface-2); border: 1px solid var(--line-2);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 30px; letter-spacing: .04em; color: var(--accent);
+  }
+  .gate h1 { font-size: 30px; font-weight: 500; }
+  .gate form { display: grid; gap: 12px; }
+  .gate input {
+    font: inherit; font-size: 20px; letter-spacing: .3em; text-align: center;
+    padding: 14px 16px; border-radius: 12px;
+    background: var(--surface); border: 1px solid var(--line-2); color: var(--text);
+  }
+  .gate input::placeholder { letter-spacing: .05em; color: var(--dim); font-size: 16px; }
+  .gate .primary { justify-content: center; padding: 14px; font-size: 17px; }
+  .byline { font-size: 13px; color: var(--dim); letter-spacing: .12em; text-transform: uppercase; }
+
+  /* ---------- onboarding ---------- */
+  .steps { display: grid; gap: 14px; margin-top: 28px; }
+  .step {
+    display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px;
+  }
+  .step .n {
+    width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--surface-2); border: 1px solid var(--line-2); color: var(--accent); font-weight: 700; font-size: 18px;
+  }
+  .step h3 { font-size: 20px; margin-bottom: 4px; }
+  .step p { color: var(--muted); font-size: 16px; margin-bottom: 12px; }
+  .step.done { border-color: var(--ok); }
+  .step.done .n { background: var(--ok); color: var(--accent-ink); border-color: var(--ok); }
+
+  /* ---------- client page ---------- */
+  .top {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 28px 0 18px; border-bottom: 1px solid var(--line);
+  }
+  .top .who { display: flex; align-items: center; gap: 14px; }
+  .top .logo-client { width: 52px; height: 52px; border-radius: 14px; font-size: 18px; margin: 0; }
+  .top h1 { font-size: 24px; font-weight: 600; line-height: 1.1; }
+  .top .sub { color: var(--muted); font-size: 15px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 0 8px; }
+  .section-h { display: flex; align-items: baseline; justify-content: space-between; padding: 26px 0 12px; }
+  .section-h h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); font-weight: 600; }
+  .list { display: grid; gap: 16px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    display: grid; grid-template-columns: 1fr; overflow: hidden;
+  }
+  @media (min-width: 640px) { .card { grid-template-columns: 220px 1fr; } }
+  .preview {
+    position: relative; aspect-ratio: 9 / 16; max-width: 100%;
+    background: #111; display: grid; place-items: center; overflow: hidden;
+  }
+  @media (max-width: 639px) { .preview { aspect-ratio: 4 / 5; } }
+  .preview .frame { position: absolute; inset: 0; }
+  .f1 { background: radial-gradient(120% 80% at 30% 20%, #4a3a2a 0%, #1b1712 55%, #0d0c0a 100%); }
+  .f2 { background: radial-gradient(100% 90% at 70% 80%, #5a4630 0%, #201a14 50%, #0c0b09 100%); }
+  .f3 { background: radial-gradient(100% 90% at 50% 40%, #3a3a3a 0%, #181818 55%, #0b0b0b 100%); }
+  .preview .play {
+    position: relative; width: 58px; height: 58px; border-radius: 50%;
+    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.35);
+    backdrop-filter: blur(6px); display: grid; place-items: center;
+  }
+  .preview .play svg { width: 22px; height: 22px; fill: #fff; margin-left: 3px; }
+  .preview .dur {
+    position: absolute; right: 10px; bottom: 10px; font-size: 13px; font-weight: 600;
+    background: rgba(0,0,0,.6); padding: 3px 8px; border-radius: 6px; font-variant-numeric: tabular-nums;
+  }
+  .preview .new {
+    position: absolute; left: 10px; top: 10px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    background: var(--accent); color: var(--accent-ink); padding: 4px 9px; border-radius: 6px;
+  }
+  .body { padding: 18px; display: grid; gap: 14px; align-content: start; }
+  .body .title { display: flex; align-items: baseline; gap: 10px; }
+  .body .num { color: var(--dim); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .body h3 { font-size: 22px; font-weight: 600; }
+  .when {
+    display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+    font-size: 15px; font-weight: 600; color: var(--accent);
+    background: rgba(191,189,171,.08); border: 1px solid rgba(191,189,171,.25);
+    padding: 6px 12px; border-radius: 8px;
+  }
+  .when.past { color: var(--muted); background: transparent; border-color: var(--line-2); }
+  .desc {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px;
+    display: grid; gap: 10px;
+  }
+  .desc pre {
+    margin: 0; font: inherit; white-space: pre-wrap; color: #d8d8d8; font-size: 16px; line-height: 1.5;
+  }
+  .desc .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .desc .row .eyebrow { color: var(--muted); }
+  .tip { display: grid; grid-template-columns: 18px 1fr; gap: 10px; color: var(--muted); font-size: 16px; }
+  .tip svg { width: 18px; height: 18px; margin-top: 3px; stroke: var(--accent); }
+  .tip b { color: var(--text); font-weight: 600; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 2px; }
+  .only-mobile { display: inline-flex; }
+  .only-desktop { display: none; }
+  @media (min-width: 640px) { .only-mobile { display: none; } .only-desktop { display: inline-flex; } }
+
+  details.archive { border-top: 1px solid var(--line); margin-top: 26px; }
+  details.archive summary {
+    cursor: pointer; list-style: none; padding: 18px 0; display: flex; justify-content: space-between; align-items: center;
+    font-size: 15px; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); font-weight: 600;
+  }
+  details.archive summary::-webkit-details-marker { display: none; }
+  details.archive summary .chev { transition: transform .2s; }
+  details[open].archive summary .chev { transform: rotate(180deg); }
+  .arch-row {
+    display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center;
+    padding: 12px 0; border-top: 1px solid var(--line);
+  }
+  .arch-row .thumb { width: 52px; aspect-ratio: 9/16; border-radius: 6px; }
+  .arch-row .t { font-weight: 600; }
+  .arch-row .d { color: var(--dim); font-size: 14px; }
+
+  .foot {
+    margin-top: 36px; padding: 28px 0 20px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center;
+  }
+  .foot .sig { color: var(--dim); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; }
+
+  /* ---------- admin ---------- */
+  .adm-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding: 28px 0 16px; border-bottom: 1px solid var(--line); }
+  .adm-top h1 { font-size: 26px; }
+  .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 18px 0 6px; }
+  @media (min-width: 560px) { .kpis { grid-template-columns: repeat(4, 1fr); } }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .kpi .v { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .kpi .l { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .14em; margin-top: 4px; }
+  .kpi .bar { height: 4px; background: var(--line-2); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  .kpi .bar i { display: block; height: 100%; width: 15%; background: var(--accent); }
+
+  .alerts { display: grid; gap: 8px; }
+  .alert {
+    display: grid; grid-template-columns: 8px 1fr auto; gap: 12px; align-items: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+  }
+  .alert .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .alert.warn .dot { background: var(--warn); }
+  .alert.bad .dot { background: var(--bad); }
+  .alert.info .dot { background: var(--muted); }
+  .alert .where { color: var(--dim); font-size: 14px; }
+  .alert .fix { color: var(--muted); font-size: 14px; white-space: nowrap; }
+
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 15px; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .14em; color: var(--dim); font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  td.n { font-variant-numeric: tabular-nums; }
+  td .name { font-weight: 600; font-size: 16px; }
+  td .slug { color: var(--dim); font-size: 13px; }
+  .pill { display: inline-block; padding: 3px 9px; border-radius: 6px; font-size: 13px; font-weight: 600; border: 1px solid var(--line-2); color: var(--muted); }
+  .pill.ok { color: var(--ok); border-color: rgba(143,191,154,.4); }
+  .pill.warn { color: var(--warn); border-color: rgba(217,179,106,.4); }
+  .pill.bad { color: var(--bad); border-color: rgba(217,138,122,.4); }
+  td .acts { display: flex; gap: 6px; }
+  td .acts button { padding: 5px 10px; font-size: 13px; }
+  .mdp { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: 14px; letter-spacing: .05em; color: var(--muted); }
+
+  .week { display: grid; gap: 6px; }
+  .day { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .day:last-child { border-bottom: 0; }
+  .day .dn { font-weight: 600; }
+  .day .dn small { display: block; color: var(--dim); font-weight: 400; font-size: 13px; }
+  .day .items { display: grid; gap: 6px; }
+  .pub { display: flex; gap: 10px; align-items: center; font-size: 15px; }
+  .pub .h { font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 600; width: 46px; }
+  .pub .c { color: var(--muted); }
+  .day.empty .items { color: var(--dim); font-size: 14px; }
+
+  .log { display: grid; gap: 0; }
+  .log-row { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .log-row:last-child { border-bottom: 0; }
+  .log-row .t { color: var(--dim); font-variant-numeric: tabular-nums; }
+  .log-row b { font-weight: 600; }
+
+  .note { font-size: 14px; color: var(--dim); padding: 14px 0 0; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<!-- ================= 1. MOT DE PASSE ================= -->
+<section id="mdp" class="view">
+  <div class="gate">
+    <div class="gate-card">
+      <div class="logo-client">OG</div>
+      <div>
+        <p class="eyebrow">Vos vidéos</p>
+        <h1 style="margin-top:6px">O'Grignou</h1>
+      </div>
+      <form onsubmit="event.preventDefault(); go('bienvenue')">
+        <input id="pw" type="password" inputmode="text" autocomplete="current-password" placeholder="Mot de passe" aria-label="Mot de passe">
+        <button class="primary" type="submit">Entrer</button>
+      </form>
+      <p class="byline">Nathan Dayer · Vidéaste</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. BIENVENUE (première visite) ================= -->
+<section id="bienvenue" class="view">
+  <div class="wrap" style="max-width:520px">
+    <div style="padding:40px 0 0; text-align:center">
+      <div class="logo-client">OG</div>
+      <p class="eyebrow" style="margin-top:22px">Bienvenue</p>
+      <h1 style="font-size:30px; font-weight:500; margin-top:6px">Deux réglages, une seule fois.</h1>
+      <p class="muted" style="margin-top:8px">Ensuite vous n'aurez plus jamais à y penser.</p>
+    </div>
+    <div class="steps">
+      <div class="step" id="step1">
+        <div class="n">1</div>
+        <div>
+          <h3>Ajoutez votre calendrier</h3>
+          <p>Les dates de publication conseillées apparaissent dans votre agenda et se mettent à jour toutes seules.</p>
+          <button class="primary" onclick="done('step1','Calendrier ajouté')">S'abonner au calendrier</button>
+        </div>
+      </div>
+      <div class="step" id="step2">
+        <div class="n">2</div>
+        <div>
+          <h3>Gardez cette page sous la main</h3>
+          <p>Sur iPhone : Partager, puis « Sur l'écran d'accueil ». Sur Android : menu, puis « Ajouter à l'écran d'accueil ».</p>
+          <button onclick="done('step2','Parfait')">C'est fait</button>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:center; gap:10px; padding:26px 0">
+      <button class="primary" onclick="go('client')">Voir mes vidéos</button>
+      <button class="ghost" onclick="go('client')">Plus tard</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. PAGE CLIENT ================= -->
+<section id="client" class="view">
+  <div class="wrap">
+    <header class="top">
+      <div class="who">
+        <div class="logo-client">OG</div>
+        <div>
+          <h1>O'Grignou</h1>
+          <p class="sub">2 nouvelles vidéos · 5 au total</p>
+        </div>
+      </div>
+      <button class="small ghost" onclick="toast('Zip en cours de préparation')">
+        <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span class="only-desktop">Tout télécharger</span>
+      </button>
+    </header>
+
+    <div class="section-h">
+      <h2>Nouveautés</h2>
+      <span class="muted" style="font-size:14px">Livrées hier</span>
+    </div>
+
+    <div class="list">
+      <!-- vidéo 01 -->
+      <article class="card">
+        <div class="preview">
+          <div class="frame f1"></div>
+          <span class="new">Nouveau</span>
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></svg></div>
+          <span class="dur">0:34</span>
+        </div>
+        <div class="body">
+          <div class="title"><span class="num">01</span><h3>La terrasse au coucher du soleil</h3></div>
+          <span class="when">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            À publier jeudi 2 octobre, 18h00
+          </span>
+          <div class="desc">
+            <div class="row">
+              <span class="eyebrow">Description</span>
+              <button class="small" data-copy="desc1" onclick="copy(this)">Copier</button>
+            </div>
+            <pre id="desc1">Le soleil se couche sur Sierre, la terrasse se remplit. Le meilleur moment de la journée chez O'Grignou.
+
+Réservations par message ou au 027 455 00 00.
+
+#sierre #valais #terrasse #restaurant #ogrignou</pre>
+          </div>
+          <div class="tip">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.6.6 1 1.4 1 2.2V17h6v-1.3c0-.8.4-1.6 1-2.2A6 6 0 0012 3z"/></svg>
+            <p><b>Conseil.</b> Postez en Reel, pas en story. Répondez aux 3 premiers commentaires dans l'heure, ça pousse la vidéo.</p>
+          </div>
+          <div class="actions">
+            <button class="primary only-mobile" onclick="toast('Ouvre le menu de partage iOS/Android')">
+              <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V3m0 0l-4 4m4-4l4 4M4 14v5a2 2 0 002 2h12a2 2 0 002-2v-5"/></svg>
+              Enregistrer dans Photos
+            </button>
+            <button class="primary only-desktop" onclick="toast('Téléchargement ogrignou-01-terrasse.mp4')">Télécharger la vidéo</button>
+            <button onclick="toast('Téléchargement de la vignette')">Vignette</button>
+            <button onclick="toast('Fichier calendrier envoyé')">Calendrier</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- vidéo 02 -->
+      <article class="card">
+        <div class="preview">
+          <div class="frame f2"></div>
+          <span class="new">Nouveau</span>
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></svg></div>
+          <span class="dur">0:41</span>
+        </div>
+        <div class="body">
+          <div class="title"><span class="num">02</span><h3>En cuisine, le service du midi</h3></div>
+          <span class="when">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            À publier mardi 7 octobre, 11h30
+          </span>
+          <div class="desc">
+            <div class="row">
+              <span class="eyebrow">Description</span>
+              <button class="small" data-copy="desc2" onclick="copy(this)">Copier</button>
+            </div>
+            <pre id="desc2">11h45. Le four est chaud, les commandes tombent. Voilà ce qui se passe derrière la porte de la cuisine.
+
+#cuisine #sierre #valais #ogrignou #faitmaison</pre>
+          </div>
+          <div class="tip">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.6.6 1 1.4 1 2.2V17h6v-1.3c0-.8.4-1.6 1-2.2A6 6 0 0012 3z"/></svg>
+            <p><b>Conseil.</b> Publiez juste avant le service, quand les gens se demandent où manger. Identifiez vos cuisiniers s'ils ont un compte.</p>
+          </div>
+          <div class="actions">
+            <button class="primary only-mobile" onclick="toast('Ouvre le menu de partage iOS/Android')">
+              <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V3m0 0l-4 4m4-4l4 4M4 14v5a2 2 0 002 2h12a2 2 0 002-2v-5"/></svg>
+              Enregistrer dans Photos
+            </button>
+            <button class="primary only-desktop" onclick="toast('Téléchargement ogrignou-02-cuisine.mp4')">Télécharger la vidéo</button>
+            <button onclick="toast('Téléchargement de la vignette')">Vignette</button>
+            <button onclick="toast('Fichier calendrier envoyé')">Calendrier</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="section-h">
+      <h2>Ce mois</h2>
+    </div>
+    <div class="list">
+      <article class="card">
+        <div class="preview">
+          <div class="frame f3"></div>
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></svg></div>
+          <span class="dur">0:28</span>
+        </div>
+        <div class="body">
+          <div class="title"><span class="num">03</span><h3>La carte d'automne</h3></div>
+          <span class="when past">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+            Publication conseillée le 18 septembre
+          </span>
+          <div class="desc">
+            <div class="row">
+              <span class="eyebrow">Description</span>
+              <button class="small" data-copy="desc3" onclick="copy(this)">Copier</button>
+            </div>
+            <pre id="desc3">Nouvelle carte, nouvelles saisons. Courge, châtaigne et le retour de la fondue aux bolets.
+
+#carteautomne #sierre #valais #ogrignou</pre>
+          </div>
+          <div class="actions">
+            <button class="only-mobile" onclick="toast('Ouvre le menu de partage')">Enregistrer dans Photos</button>
+            <button class="only-desktop" onclick="toast('Téléchargement')">Télécharger la vidéo</button>
+            <button onclick="toast('Téléchargement de la vignette')">Vignette</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <details class="archive">
+      <summary>
+        <span>Précédentes · 2 vidéos</span>
+        <svg class="i chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <div class="arch-row">
+        <div class="thumb f1"></div>
+        <div><div class="t">Le brunch du dimanche</div><div class="d">Livrée le 2 août</div></div>
+        <button class="small ghost" onclick="toast('Téléchargement')">Télécharger</button>
+      </div>
+      <div class="arch-row">
+        <div class="thumb f2"></div>
+        <div><div class="t">Présentation de l'équipe</div><div class="d">Livrée le 14 juillet</div></div>
+        <button class="small ghost" onclick="toast('Téléchargement')">Télécharger</button>
+      </div>
+    </details>
+
+    <footer class="foot">
+      <span class="sig">Nathan Dayer · Vidéaste</span>
+      <button class="small" onclick="toast('Ouvre WhatsApp')">
+        <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-13.5 7.8L3 21l1.2-4.5A9 9 0 1121 12z"/></svg>
+        Une question ? WhatsApp
+      </button>
+    </footer>
+  </div>
+</section>
+
+<!-- ================= 4. ADMIN ================= -->
+<section id="admin" class="view">
+  <div class="wrap" style="max-width:960px">
+    <header class="adm-top">
+      <div>
+        <p class="eyebrow">Espace clients</p>
+        <h1>Gestion</h1>
+      </div>
+      <span class="muted" style="font-size:14px">Synchro il y a 3 min</span>
+    </header>
+
+    <div class="kpis">
+      <div class="kpi"><div class="v">9</div><div class="l">Clients actifs</div></div>
+      <div class="kpi"><div class="v">47</div><div class="l">Vidéos en ligne</div></div>
+      <div class="kpi"><div class="v">6</div><div class="l">Publications cette semaine</div></div>
+      <div class="kpi"><div class="v">38 Go</div><div class="l">sur 250 Go</div><div class="bar"><i></i></div></div>
+    </div>
+
+    <div class="section-h"><h2>À corriger</h2><span class="muted" style="font-size:14px">4 points</span></div>
+    <div class="alerts">
+      <div class="alert bad">
+        <span class="dot"></span>
+        <div>Vidéo en .mov, illisible dans le navigateur <div class="where">cave-mercier / 03-vendanges.mov</div></div>
+        <span class="fix">Réexporter en mp4</span>
+      </div>
+      <div class="alert warn">
+        <span class="dot"></span>
+        <div>Pas de vignette <div class="where">ogrignou / 02-cuisine</div></div>
+        <span class="fix">Ajouter 02-cuisine.jpg</span>
+      </div>
+      <div class="alert warn">
+        <span class="dot"></span>
+        <div>Pas de date de publication <div class="where">hotel-bella-tola / 05-spa</div></div>
+        <span class="fix">Ligne date: dans le .txt</span>
+      </div>
+      <div class="alert info">
+        <span class="dot"></span>
+        <div>3 vidéos de plus de 6 mois <div class="where">boulangerie-zufferey</div></div>
+        <span class="fix">À supprimer du dossier</span>
+      </div>
+    </div>
+
+    <div class="section-h"><h2>Clients</h2></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Client</th><th>Vidéos</th><th>Dernière livraison</th><th>Dernière visite</th><th>Téléchargé</th><th>Accès</th><th>Mot de passe</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="name">O'Grignou</div><div class="slug">/ogrignou</div></td>
+            <td class="n">5</td><td>Hier</td><td><span class="pill ok">Hier 21:14</span></td><td class="n">3 / 5</td>
+            <td><span class="pill">Jusqu'au 31.03.2027</span></td><td class="mdp">terrasse26</td>
+            <td><div class="acts"><button onclick="copyText('Bonjour, vos vidéos sont en ligne : https://clients.nathandayer.ch/ogrignou\nMot de passe : terrasse26', 'Invitation copiée')">Invitation</button><button class="ghost" onclick="go('client')">Voir</button></div></td>
+          </tr>
+          <tr>
+            <td><div class="name">Cave Mercier</div><div class="slug">/cave-mercier</div></td>
+            <td class="n">8</td><td>Il y a 3 jours</td><td><span class="pill warn">Jamais</span></td><td class="n">0 / 8</td>
+            <td><span class="pill">Jusqu'au 31.12.2026</span></td><td class="mdp">vendanges</td>
+            <td><div class="acts"><button onclick="toast('Invitation copiée')">Invitation</button><button class="ghost" onclick="toast('Ouvre la page client')">Voir</button></div></td>
+          </tr>
+          <tr>
+            <td><div class="name">Hôtel Bella Tola</div><div class="slug">/hotel-bella-tola</div></td>
+            <td class="n">6</td><td>Il y a 8 jours</td><td><span class="pill ok">Lundi</span></td><td class="n">6 / 6</td>
+            <td><span class="pill">Sans limite</span></td><td class="mdp">anniviers</td>
+            <td><div class="acts"><button onclick="toast('Invitation copiée')">Invitation</button><button class="ghost" onclick="toast('Ouvre la page client')">Voir</button></div></td>
+          </tr>
+          <tr>
+            <td><div class="name">Boulangerie Zufferey</div><div class="slug">/boulangerie-zufferey</div></td>
+            <td class="n">11</td><td>Il y a 19 jours</td><td><span class="pill ok">Il y a 2 sem.</span></td><td class="n">11 / 11</td>
+            <td><span class="pill bad">Expiré le 15.09</span></td><td class="mdp">croissant</td>
+            <td><div class="acts"><button onclick="toast('Invitation copiée')">Invitation</button><button class="ghost" onclick="toast('Ouvre la page client')">Voir</button></div></td>
+          </tr>
+          <tr>
+            <td><div class="name">Garage Rey</div><div class="slug">/garage-rey</div></td>
+            <td class="n">4</td><td>Il y a 27 jours</td><td><span class="pill ok">Il y a 3 sem.</span></td><td class="n">4 / 4</td>
+            <td><span class="pill">Jusqu'au 30.06.2027</span></td><td class="mdp">leopard87</td>
+            <td><div class="acts"><button onclick="toast('Invitation copiée')">Invitation</button><button class="ghost" onclick="toast('Ouvre la page client')">Voir</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">4 autres clients sans activité ce mois. Les modifications se font dans le dossier Livraisons sur ton PC, cette page lit seulement.</p>
+
+    <div class="section-h"><h2>Publications à venir</h2><span class="muted" style="font-size:14px">7 jours</span></div>
+    <div class="week">
+      <div class="day"><div class="dn">Jeudi<small>25 sept.</small></div><div class="items">
+        <div class="pub"><span class="h">12:00</span><span>Nouvelle cuvée rouge</span><span class="c">· Cave Mercier</span></div>
+        <div class="pub"><span class="h">18:30</span><span>Vue depuis la chambre 12</span><span class="c">· Hôtel Bella Tola</span></div>
+      </div></div>
+      <div class="day empty"><div class="dn">Vendredi<small>26 sept.</small></div><div class="items">Rien de prévu</div></div>
+      <div class="day"><div class="dn">Samedi<small>27 sept.</small></div><div class="items">
+        <div class="pub"><span class="h">09:00</span><span>Le pain du samedi</span><span class="c">· Boulangerie Zufferey</span></div>
+      </div></div>
+      <div class="day empty"><div class="dn">Dimanche<small>28 sept.</small></div><div class="items">Rien de prévu</div></div>
+      <div class="day"><div class="dn">Lundi<small>29 sept.</small></div><div class="items">
+        <div class="pub"><span class="h">07:30</span><span>Contrôle avant l'hiver</span><span class="c">· Garage Rey</span></div>
+      </div></div>
+      <div class="day"><div class="dn">Mardi<small>30 sept.</small></div><div class="items">
+        <div class="pub"><span class="h">17:00</span><span>Le spa en automne</span><span class="c">· Hôtel Bella Tola</span></div>
+      </div></div>
+      <div class="day"><div class="dn">Jeudi<small>2 oct.</small></div><div class="items">
+        <div class="pub"><span class="h">18:00</span><span>La terrasse au coucher du soleil</span><span class="c">· O'Grignou</span></div>
+      </div></div>
+    </div>
+
+    <div class="section-h"><h2>Journal</h2></div>
+    <div class="log">
+      <div class="log-row"><span class="t">Hier 21:14</span><span><b>O'Grignou</b> a ouvert sa page et téléchargé 01-terrasse</span></div>
+      <div class="log-row"><span class="t">Hier 19:02</span><span>Synchro : 2 nouvelles vidéos pour <b>O'Grignou</b></span></div>
+      <div class="log-row"><span class="t">Lundi 08:40</span><span><b>Hôtel Bella Tola</b> a copié la description de 04-chambre-12</span></div>
+      <div class="log-row"><span class="t">Lundi 08:39</span><span><b>Hôtel Bella Tola</b> a enregistré 04-chambre-12 dans Photos</span></div>
+      <div class="log-row"><span class="t">Dim. 16:20</span><span>Mot de passe refusé 3 fois sur <b>/cave-mercier</b></span></div>
+      <div class="log-row"><span class="t">Sam. 10:05</span><span><b>Boulangerie Zufferey</b> a téléchargé le zip complet</span></div>
+    </div>
+    <div style="height:32px"></div>
+  </div>
+</section>
+
+<nav class="switch" aria-label="Choix de la maquette">
+  <div class="row">
+    <span class="label">Maquette</span>
+    <button data-v="mdp" onclick="go('mdp')">Mot de passe</button>
+    <button data-v="bienvenue" onclick="go('bienvenue')">1re visite</button>
+    <button data-v="client" onclick="go('client')">Page client</button>
+    <button data-v="admin" onclick="go('admin')">Admin</button>
+  </div>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const views = ['mdp', 'bienvenue', 'client', 'admin'];
+  function go(v) {
+    if (!views.includes(v)) v = 'mdp';
+    document.querySelectorAll('.view').forEach(s => s.classList.toggle('active', s.id === v));
+    document.querySelectorAll('.switch button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+    try { history.replaceState(null, '', '#' + v); } catch (e) {}
+    window.scrollTo(0, 0);
+  }
+  let tt;
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+  function copyText(txt, msg) {
+    const ok = () => toast(msg || 'Copié');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(ok).catch(() => fallback(txt, ok));
+    } else fallback(txt, ok);
+  }
+  function fallback(txt, ok) {
+    const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta);
+    ta.select(); try { document.execCommand('copy'); ok(); } catch (e) { toast('Sélectionnez le texte pour le copier'); }
+    document.body.removeChild(ta);
+  }
+  function copy(btn) {
+    const el = document.getElementById(btn.dataset.copy);
+    copyText(el.textContent, 'Description copiée');
+    btn.textContent = 'Copié'; setTimeout(() => btn.textContent = 'Copier', 1500);
+  }
+  function done(id, msg) {
+    document.getElementById(id).classList.add('done'); toast(msg);
+  }
+  go((location.hash || '#mdp').slice(1));
+  window.addEventListener('hashchange', () => go(location.hash.slice(1)));
+</script>
