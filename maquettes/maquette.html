@@ -285,6 +285,18 @@
   .log-row b { font-weight: 600; }
 
   .note { font-size: 14px; color: var(--dim); padding: 14px 0 0; }
+  /* ---------- vignette plein écran ---------- */
+  .lb { position: fixed; inset: 0; z-index: 70; background: rgba(10,10,10,.96); display: none; align-items: center; justify-content: center; padding: 20px 16px calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .lb.open { display: flex; }
+  .lb .box { display: grid; gap: 14px; justify-items: center; width: 100%; max-width: 360px; }
+  .lb .img { width: 100%; max-width: 100%; aspect-ratio: 9 / 16; max-height: 70vh; border-radius: 12px; position: relative; overflow: hidden; }
+  .lb .img .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 18px; color: #fff; font-weight: 700; font-size: 26px; line-height: 1.1; text-shadow: 0 2px 12px rgba(0,0,0,.6); background: linear-gradient(transparent, rgba(0,0,0,.55)); }
+  .lb .t { color: #fff; font-weight: 600; font-size: 17px; text-align: center; }
+  .lb .t small { display: block; color: #999; font-weight: 400; font-size: 14px; }
+  .lb .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .lb .acts .primary { background: #fff; color: #0a0a0a; border-color: #fff; }
+  .lb .acts .ghost { color: #fff; border-color: #3a3a3a; }
+  .lb .close { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: 14px; width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: 50%; background: rgba(255,255,255,.12); border-color: transparent; color: #fff; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -390,7 +402,7 @@ Réservations par message ou au 027 455 00 00.
               Enregistrer dans Photos
             </button>
             <button class="primary only-desktop" onclick="toast('Téléchargement ogrignou-01-terrasse.mp4')">Télécharger la vidéo</button>
-            <button onclick="toast('Téléchargement de la vignette')">Vignette</button>
+            <button onclick="vignette('f1','La terrasse au coucher du soleil','01')">Vignette</button>
             <button onclick="toast('Fichier calendrier envoyé')">Calendrier</button>
           </div>
         </div>
@@ -429,7 +441,7 @@ Réservations par message ou au 027 455 00 00.
               Enregistrer dans Photos
             </button>
             <button class="primary only-desktop" onclick="toast('Téléchargement ogrignou-02-cuisine.mp4')">Télécharger la vidéo</button>
-            <button onclick="toast('Téléchargement de la vignette')">Vignette</button>
+            <button onclick="vignette('f2','En cuisine, le service du midi','02')">Vignette</button>
             <button onclick="toast('Fichier calendrier envoyé')">Calendrier</button>
           </div>
         </div>
@@ -464,7 +476,7 @@ Réservations par message ou au 027 455 00 00.
           <div class="actions">
             <button class="only-mobile" onclick="toast('Ouvre le menu de partage')">Enregistrer dans Photos</button>
             <button class="only-desktop" onclick="toast('Téléchargement')">Télécharger la vidéo</button>
-            <button onclick="toast('Téléchargement de la vignette')">Vignette</button>
+            <button onclick="vignette('f3','La carte d\'automne','03')">Vignette</button>
           </div>
         </div>
       </article>
@@ -616,6 +628,19 @@ Réservations par message ou au 027 455 00 00.
   </div>
 </section>
 
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Vignette">
+  <button class="close" onclick="closeLb()" aria-label="Fermer"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="box">
+    <div class="img" id="lbImg"><div class="cap" id="lbCap"></div></div>
+    <div class="t" id="lbTitle"></div>
+    <div class="acts">
+      <button class="primary only-mobile" onclick="toast('Ouvre le menu de partage')">Enregistrer dans Photos</button>
+      <button class="primary only-desktop" onclick="toast('Téléchargement de la vignette')">Télécharger</button>
+      <button class="ghost" onclick="closeLb()">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <nav class="switch" aria-label="Choix de la maquette">
   <div class="row">
     <span class="label">Maquette</span>
@@ -661,6 +686,16 @@ Réservations par message ou au 027 455 00 00.
   function done(id, msg) {
     document.getElementById(id).classList.add('done'); toast(msg);
   }
+  function vignette(frame, title, num) {
+    const img = document.getElementById('lbImg');
+    img.className = 'img ' + frame;
+    document.getElementById('lbCap').textContent = title.toUpperCase();
+    document.getElementById('lbTitle').innerHTML = 'Vignette ' + num + '<small>Image de couverture du Reel, 1080 × 1920</small>';
+    document.getElementById('lb').classList.add('open');
+  }
+  function closeLb() { document.getElementById('lb').classList.remove('open'); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+  document.getElementById('lb').addEventListener('click', e => { if (e.target.id === 'lb') closeLb(); });
   go((location.hash || '#mdp').slice(1));
   window.addEventListener('hashchange', () => go(location.hash.slice(1)));
 </script>
