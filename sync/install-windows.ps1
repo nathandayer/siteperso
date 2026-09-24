@@ -69,7 +69,7 @@ if (Test-Path $existing) {
     }
 }
 if (-not $reuse) {
-$defaults = @{ local = (Join-Path $HOME 'Livraisons'); ftpHost = ''; ftpUser = ''; remotePath = '/' }
+$defaults = @{ local = (Join-Path (Resolve-Path (Join-Path $here '..')) 'Livraisons'); ftpHost = ''; ftpUser = ''; remotePath = '/' }
 $defaultsFile = Join-Path $here 'sync.defaults.json'
 if (Test-Path $defaultsFile) {
     $d = Get-Content $defaultsFile -Raw -Encoding UTF8 | ConvertFrom-Json

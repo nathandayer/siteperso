@@ -4,14 +4,19 @@ Un dossier sur le PC = le site. Chaque client reçoit un lien et un mot de passe
 vignettes, descriptions à copier, dates de publication conseillées et conseils. Zéro frais en plus :
 hébergement Infomaniak existant, PHP sans base de données, synchro gratuite avec rclone.
 
+Sur le PC de Nathan, ce repo est cloné dans `C:\Users\natha\Portail`. Une session Claude Code ouverte là
+lit `CLAUDE.md` et sait tout faire : clients, synchro, code, déploiement.
+
 ```
-portail/            ce qui va sur le serveur
-  public/           racine web du sous-domaine (index.php, assets, .htaccess)
-  app/              code PHP (config.php à régler, lib, media, zip, ics, admin, vues)
-  clients/          cible de la synchro, hors racine web (contient _modele/)
+Livraisons/         LES CLIENTS. Un dossier par client. Synchronisé vers le serveur. Jamais dans git.
+portail/            ce qui tourne sur le serveur
+  public/           racine web (index.php, assets, .htaccess)
+  app/              code PHP (config.php, lib, media, zip, ics, admin, vues)
+  clients/          cible de la synchro sur le serveur (contient _modele/)
   private/          clé de signature, journaux, blocages (créé tout seul)
-sync/               ce qui va sur le PC Windows (install-windows.ps1, sync.ps1)
+sync/               install-windows.ps1 (une fois), sync.ps1 (toutes les 5 min), deploy.ps1 (envoi du code)
 maquettes/          maquette HTML validée à l'étape 2
+CLAUDE.md           contexte pour Claude Code en local
 ```
 
 Les fichiers HTML à la racine (index.html, design.html…) sont l'ancien portfolio de 2022. Ils ne servent plus.
@@ -61,15 +66,18 @@ Manager > Hébergement > FTP/SSH > Ajouter un utilisateur FTP.
 - Dossier de départ : `/sites/client.nathandayer.ch/clients` (l'utilisateur ne voit que ce dossier, il ne peut rien casser d'autre).
 - Noter serveur, utilisateur et mot de passe. Ils ne servent qu'au script d'installation sur le PC.
 
-### 5. Synchro sur le PC Windows
+### 5. Le PC Windows
 
-1. Copier le dossier `sync/` (et `portail/clients/_modele/`) sur le PC, par exemple dans `Documents\portail-sync\`.
-2. Clic droit sur `install-windows.ps1` > Exécuter avec PowerShell.
-   Si Windows refuse : ouvrir PowerShell et taper `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, puis relancer.
-3. Répondre aux questions : dossier local (par défaut `C:\Users\<toi>\Livraisons`), serveur FTP, utilisateur, mot de passe,
-   et chemin distant. Avec l'utilisateur `lw48k_claude` limité à `/sites/client.nathandayer.ch`, le chemin distant est `/clients`.
+1. Installer Git (`winget install Git.Git`) puis cloner le repo :
+   `git clone -b claude/sweet-noether-2v4gff https://github.com/nathandayer/siteperso.git C:\Users\natha\Portail`
+2. PowerShell : `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` (une fois), puis
+   `& "C:\Users\natha\Portail\sync\install-windows.ps1"`.
+3. Répondre aux questions : dossier local (Entrée pour `C:\Users\natha\Portail\Livraisons`), serveur FTP, utilisateur
+   `lw48k_livraisons` (limité au dossier `clients` du site), son mot de passe, chemin distant `/`.
 4. Le script installe rclone, teste la connexion, crée la tâche planifiée « Portail clients - synchro » (toutes les 5 minutes
    et à l'ouverture de session) et fait une première synchro.
+5. Pour envoyer une nouvelle version du code sur le serveur : `powershell -ExecutionPolicy Bypass -File sync\deploy.ps1`
+   (demande une fois le mot de passe FTP de `lw48k_claude`). Ne touche ni aux clients, ni à `app/config.php` du serveur.
 
 Journal de la synchro : `sync.log` à côté du script. La page admin affiche « Synchro il y a X min ».
 

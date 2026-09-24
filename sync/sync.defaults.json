@@ -1,6 +1,6 @@
 {
-  "local": "C:\\Users\\natha\\Livraisons",
+  "local": "",
   "ftpHost": "lw48k.ftp.infomaniak.com",
-  "ftpUser": "lw48k_claude",
-  "remotePath": "/clients"
+  "ftpUser": "lw48k_livraisons",
+  "remotePath": "/"
 }
