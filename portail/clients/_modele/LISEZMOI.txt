@@ -1,0 +1,10 @@
+Dossier modèle. Ignoré par le site (son nom commence par _).
+
+Pour un nouveau client :
+1. Copier ce dossier et le renommer : minuscules, chiffres, tirets. Ex. ogrignou, cave-mercier
+2. Remplir client.txt (nom, mdp, expire facultatif)
+3. Déposer logo.png (facultatif)
+4. Pour chaque vidéo : 01-nom.mp4 + 01-nom.jpg (vignette) + 01-nom.txt (copie de 01-exemple.txt)
+5. Attendre 5 minutes. C'est en ligne.
+
+Un fichier ou dossier dont le nom commence par _ n'est jamais publié (brouillon).

@@ -1,0 +1,8 @@
+titre: Titre de la vidéo
+date: 02.10.2026 18:00
+description:
+Le texte à publier avec la vidéo.
+Plusieurs lignes possibles.
+
+#hashtag #valais
+conseil: Deux lignes max, le geste concret que le client doit faire.

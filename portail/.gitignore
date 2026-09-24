@@ -1,0 +1,9 @@
+# contenu réel des clients : jamais dans git
+clients/*
+!clients/.htaccess
+!clients/_modele/
+# clé, journaux, blocages
+private/*
+!private/.htaccess
+# réglages locaux
+app/config.local.php
