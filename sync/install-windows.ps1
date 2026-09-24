@@ -54,8 +54,14 @@ if (-not $rclone) {
 }
 Write-Host "rclone : $rclone" -ForegroundColor Green
 
-# ---------- 2. questions ----------
-$defaultLocal = Join-Path $HOME 'Livraisons'
+# ---------- 2. questions (valeurs par défaut pré-remplies dans sync.defaults.json) ----------
+$defaults = @{ local = (Join-Path $HOME 'Livraisons'); ftpHost = ''; ftpUser = ''; remotePath = '/' }
+$defaultsFile = Join-Path $here 'sync.defaults.json'
+if (Test-Path $defaultsFile) {
+    $d = Get-Content $defaultsFile -Raw -Encoding UTF8 | ConvertFrom-Json
+    foreach ($k in @('local', 'ftpHost', 'ftpUser', 'remotePath')) { if ($d.$k) { $defaults[$k] = [Environment]::ExpandEnvironmentVariables($d.$k) } }
+}
+$defaultLocal = $defaults.local
 $local = Read-Host "Dossier local des livraisons [$defaultLocal]"
 if ([string]::IsNullOrWhiteSpace($local)) { $local = $defaultLocal }
 if (-not (Test-Path $local)) {
@@ -67,12 +73,14 @@ if (-not (Test-Path $local)) {
 
 Write-Host ''
 Write-Host 'Accès FTP Infomaniak (Manager > Hébergement > FTP/SSH). Rien n''est envoyé ailleurs que chez Infomaniak.' -ForegroundColor Yellow
-$ftpHost = Read-Host 'Serveur FTP (ex. xxxxx.ftp.infomaniak.com)'
-$ftpUser = Read-Host 'Utilisateur FTP'
-$ftpPassSecure = Read-Host 'Mot de passe FTP' -AsSecureString
+$ftpHost = Read-Host "Serveur FTP [$($defaults.ftpHost)]"
+if ([string]::IsNullOrWhiteSpace($ftpHost)) { $ftpHost = $defaults.ftpHost }
+$ftpUser = Read-Host "Utilisateur FTP [$($defaults.ftpUser)]"
+if ([string]::IsNullOrWhiteSpace($ftpUser)) { $ftpUser = $defaults.ftpUser }
+$ftpPassSecure = Read-Host 'Mot de passe FTP (jamais enregistré ailleurs que dans rclone)' -AsSecureString
 $ftpPass = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($ftpPassSecure))
-$defaultRemote = '/sites/clients.nathandayer.ch/clients'
-$remotePath = Read-Host "Dossier clients/ sur le serveur [$defaultRemote] (mettre / si l'utilisateur FTP est limité à ce dossier)"
+$defaultRemote = $defaults.remotePath
+$remotePath = Read-Host "Dossier clients/ sur le serveur [$defaultRemote] (/ si l'utilisateur FTP est limité à ce dossier)"
 if ([string]::IsNullOrWhiteSpace($remotePath)) { $remotePath = $defaultRemote }
 
 # ---------- 3. connexion rclone ----------
