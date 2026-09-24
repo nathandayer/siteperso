@@ -84,20 +84,26 @@ $remotePath = Read-Host "Dossier clients/ sur le serveur [$defaultRemote] (/ si 
 if ([string]::IsNullOrWhiteSpace($remotePath)) { $remotePath = $defaultRemote }
 
 # ---------- 3. connexion rclone ----------
-& $rclone config delete infomaniak 2>$null
-& $rclone config create infomaniak ftp host $ftpHost user $ftpUser pass $ftpPass explicit_tls true --obscure --non-interactive | Out-Null
+# rclone écrit ses avertissements sur la sortie d'erreur : PowerShell ne doit pas s'arrêter pour ça
+$ErrorActionPreference = 'Continue'
+& $rclone config delete infomaniak 2>&1 | Out-Null
+& $rclone config create infomaniak ftp host $ftpHost user $ftpUser pass $ftpPass explicit_tls true --obscure --non-interactive 2>&1 | Out-Null
 $ftpPass = $null
 Write-Host 'Test de connexion...'
-& $rclone lsd "infomaniak:$remotePath" 2>&1 | Out-Null
+$test = & $rclone lsd "infomaniak:$remotePath" 2>&1
 if ($LASTEXITCODE -ne 0) {
     & $rclone mkdir "infomaniak:$remotePath" 2>&1 | Out-Null
-    & $rclone lsd "infomaniak:$remotePath" 2>&1 | Out-Null
+    $test = & $rclone lsd "infomaniak:$remotePath" 2>&1
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Connexion impossible à infomaniak:$remotePath. Vérifie serveur, utilisateur, mot de passe et chemin, puis relance." -ForegroundColor Red
+        Write-Host ($test | Out-String)
+        Read-Host 'Entrée pour fermer'
         exit 1
     }
 }
 Write-Host 'Connexion FTP OK' -ForegroundColor Green
+
+$ErrorActionPreference = 'Stop'
 
 # ---------- 4. config de la synchro ----------
 $cfg = @{ local = $local; remote = 'infomaniak'; remotePath = $remotePath; rclone = $rclone }
