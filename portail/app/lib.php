@@ -41,7 +41,7 @@ function base_url(): string
     return (is_https() ? 'https' : 'http') . '://' . host_name();
 }
 
-/** Hôte avec son port éventuel (« clients.nathandayer.ch », « 127.0.0.1:8000 ») */
+/** Hôte avec son port éventuel (« client.nathandayer.ch », « 127.0.0.1:8000 ») */
 function host_name(): string
 {
     return $_SERVER['HTTP_HOST'] ?? 'localhost';

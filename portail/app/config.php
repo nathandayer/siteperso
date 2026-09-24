@@ -27,7 +27,7 @@ cfg('SITE_TAGLINE', 'Vidéaste');
 cfg('OWNER_URL',    'https://nathandayer.ch');   // où renvoyer quelqu'un qui arrive à la racine
 cfg('WHATSAPP',     '41774257761');               // format international sans +. Vide = bouton masqué.
 
-// Page de gestion : clients.nathandayer.ch/admin
+// Page de gestion : client.nathandayer.ch/admin
 cfg('ADMIN_PASSWORD', 'change-moi');
 
 // Message d'invitation copié depuis la page admin. Variables : {nom} {url} {mdp}

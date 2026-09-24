@@ -109,7 +109,7 @@ $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfil
 $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 3650)
 $logon = New-ScheduledTaskTrigger -AtLogOn
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Hours 3) -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries
-Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger, $logon) -Settings $settings -Description 'Envoie le dossier Livraisons vers clients.nathandayer.ch toutes les 5 minutes.' -Force | Out-Null
+Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger, $logon) -Settings $settings -Description 'Envoie le dossier Livraisons vers client.nathandayer.ch toutes les 5 minutes.' -Force | Out-Null
 Write-Host "Tâche planifiée « $taskName » créée (toutes les 5 min, et à l'ouverture de session)." -ForegroundColor Green
 
 # ---------- 6. première synchro ----------

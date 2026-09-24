@@ -1,5 +1,5 @@
 {
-  "local": "%USERPROFILE%\\Livraisons",
+  "local": "C:\\Users\\natha\\Livraisons",
   "ftpHost": "",
   "ftpUser": "",
   "remotePath": "/"

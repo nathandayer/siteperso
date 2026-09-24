@@ -1,4 +1,4 @@
-# Portail clients · clients.nathandayer.ch
+# Portail clients · client.nathandayer.ch
 
 Un dossier sur le PC = le site. Chaque client reçoit un lien et un mot de passe, et retrouve ses vidéos,
 vignettes, descriptions à copier, dates de publication conseillées et conseils. Zéro frais en plus :
@@ -22,8 +22,8 @@ Les fichiers HTML à la racine (index.html, design.html…) sont l'ancien portfo
 
 Manager Infomaniak > Hébergement Web > Mes sites > Ajouter un site.
 
-- Nom : `clients.nathandayer.ch` (le DNS se règle tout seul puisque le domaine est chez eux).
-- Dossier du site : `/sites/clients.nathandayer.ch/public` (important : `public` à la fin, c'est la racine web).
+- Nom : `client.nathandayer.ch` (le DNS se règle tout seul puisque le domaine est chez eux).
+- Dossier du site : `/sites/client.nathandayer.ch/public` (important : `public` à la fin, c'est la racine web).
   Si l'assistant ne propose pas de chemin, créer le site puis modifier son « dossier racine » dans ses réglages.
 - Version PHP : 8.2 ou plus.
 - Certificat SSL : Let's Encrypt, activé par défaut. Vérifier que https fonctionne.
@@ -31,10 +31,10 @@ Manager Infomaniak > Hébergement Web > Mes sites > Ajouter un site.
 ### 2. Envoyer les fichiers du portail
 
 Avec FileZilla et le compte FTP principal, envoyer **le contenu** du dossier `portail/` dans
-`/sites/clients.nathandayer.ch/` sur le serveur. Résultat attendu :
+`/sites/client.nathandayer.ch/` sur le serveur. Résultat attendu :
 
 ```
-/sites/clients.nathandayer.ch/
+/sites/client.nathandayer.ch/
   public/
   app/
   clients/
@@ -51,14 +51,14 @@ Modifier `app/config.php` sur le serveur (ou en local avant l'envoi) :
 - `WHATSAPP` : ton numéro au format international sans + ni espaces, ex. `41791234567`. Vide = bouton masqué.
 - `INVITE_TEMPLATE` : le message copié par le bouton « Invitation ».
 
-Puis ouvrir `https://clients.nathandayer.ch/admin`. Si la page s'affiche, le serveur est prêt.
+Puis ouvrir `https://client.nathandayer.ch/admin`. Si la page s'affiche, le serveur est prêt.
 Le dossier `private/` doit être accessible en écriture par PHP (c'est le cas par défaut chez Infomaniak).
 
 ### 4. Compte FTP dédié à la synchro
 
 Manager > Hébergement > FTP/SSH > Ajouter un utilisateur FTP.
 
-- Dossier de départ : `/sites/clients.nathandayer.ch/clients` (l'utilisateur ne voit que ce dossier, il ne peut rien casser d'autre).
+- Dossier de départ : `/sites/client.nathandayer.ch/clients` (l'utilisateur ne voit que ce dossier, il ne peut rien casser d'autre).
 - Noter serveur, utilisateur et mot de passe. Ils ne servent qu'au script d'installation sur le PC.
 
 ### 5. Synchro sur le PC Windows
@@ -78,7 +78,7 @@ Journal de la synchro : `sync.log` à côté du script. La page admin affiche «
 ### Nouveau client
 
 1. Dans `Livraisons`, copier `_modele` et renommer : **minuscules, chiffres, tirets, sans espace ni accent**.
-   `ogrignou`, `cave-mercier`, `hotel-bella-tola`. Le nom du dossier devient l'adresse : `clients.nathandayer.ch/ogrignou`.
+   `ogrignou`, `cave-mercier`, `hotel-bella-tola`. Le nom du dossier devient l'adresse : `client.nathandayer.ch/ogrignou`.
 2. Remplir `client.txt` :
    ```
    nom: O'Grignou
