@@ -55,6 +55,20 @@ if (-not $rclone) {
 Write-Host "rclone : $rclone" -ForegroundColor Green
 
 # ---------- 2. questions (valeurs par défaut pré-remplies dans sync.defaults.json) ----------
+$existing = Join-Path $here 'sync.config.json'
+$reuse = $false
+if (Test-Path $existing) {
+    $old = Get-Content $existing -Raw -Encoding UTF8 | ConvertFrom-Json
+    $ErrorActionPreference = 'Continue'
+    & $rclone lsd "$($old.remote):$($old.remotePath)" 2>&1 | Out-Null
+    $ok = ($LASTEXITCODE -eq 0)
+    $ErrorActionPreference = 'Stop'
+    if ($ok) {
+        $r = Read-Host "Configuration existante trouvée ($($old.local) -> serveur, connexion OK). La garder ? [O/n]"
+        if ($r -eq '' -or $r -match '^[oOyY]') { $reuse = $true; $local = $old.local; $remotePath = $old.remotePath }
+    }
+}
+if (-not $reuse) {
 $defaults = @{ local = (Join-Path $HOME 'Livraisons'); ftpHost = ''; ftpUser = ''; remotePath = '/' }
 $defaultsFile = Join-Path $here 'sync.defaults.json'
 if (Test-Path $defaultsFile) {
@@ -108,15 +122,29 @@ $ErrorActionPreference = 'Stop'
 # ---------- 4. config de la synchro ----------
 $cfg = @{ local = $local; remote = 'infomaniak'; remotePath = $remotePath; rclone = $rclone }
 [System.IO.File]::WriteAllText((Join-Path $here 'sync.config.json'), ($cfg | ConvertTo-Json), (New-Object System.Text.UTF8Encoding($false)))
+}   # fin du bloc « nouvelle configuration »
 
 # ---------- 5. tâche planifiée ----------
 $syncScript = Join-Path $here 'sync.ps1'
 $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$syncScript`""
 $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 3650)
-$logon = New-ScheduledTaskTrigger -AtLogOn
+$logon = New-ScheduledTaskTrigger -AtLogOn -User "$env:USERDOMAIN\$env:USERNAME"
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Hours 3) -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries
-Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger, $logon) -Settings $settings -Description 'Envoie le dossier Livraisons vers client.nathandayer.ch toutes les 5 minutes.' -Force | Out-Null
-Write-Host "Tâche planifiée « $taskName » créée (toutes les 5 min, et à l'ouverture de session)." -ForegroundColor Green
+$created = $false
+try {
+    Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger, $logon) -Settings $settings -Description 'Envoie le dossier Livraisons vers client.nathandayer.ch toutes les 5 minutes.' -Force -ErrorAction Stop | Out-Null
+    $created = $true
+} catch {
+    # Repli : schtasks, qui accepte toujours une tâche dans le contexte de l'utilisateur courant
+    $tr = "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"$syncScript\""
+    & schtasks.exe /Create /F /SC MINUTE /MO 5 /TN $taskName /TR $tr 2>&1 | Out-Null
+    $created = ($LASTEXITCODE -eq 0)
+}
+if ($created -and (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue)) {
+    Write-Host "Tâche planifiée « $taskName » créée (toutes les 5 min)." -ForegroundColor Green
+} else {
+    Write-Host "Impossible de créer la tâche planifiée. Ouvre le Planificateur de tâches et crée-la à la main (voir README), ou relance ce script en administrateur." -ForegroundColor Red
+}
 
 # ---------- 6. première synchro ----------
 Write-Host ''
