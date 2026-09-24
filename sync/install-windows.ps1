@@ -136,7 +136,7 @@ try {
     $created = $true
 } catch {
     # Repli : schtasks, qui accepte toujours une tâche dans le contexte de l'utilisateur courant
-    $tr = "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"$syncScript\""
+    $tr = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' + $syncScript + '"'
     & schtasks.exe /Create /F /SC MINUTE /MO 5 /TN $taskName /TR $tr 2>&1 | Out-Null
     $created = ($LASTEXITCODE -eq 0)
 }
