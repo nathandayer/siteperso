@@ -1,4 +1,4 @@
-# Installation de la synchro sur Windows. À lancer UNE fois :
+﻿# Installation de la synchro sur Windows. À lancer UNE fois :
 #   clic droit sur ce fichier > Exécuter avec PowerShell
 # (si Windows refuse : ouvrir PowerShell, puis
 #   Set-ExecutionPolicy -Scope CurrentUser RemoteSigned   et relancer)

@@ -1,4 +1,4 @@
-# Synchronise le dossier Livraisons vers le serveur Infomaniak.
+﻿# Synchronise le dossier Livraisons vers le serveur Infomaniak.
 # Lancé toutes les 5 minutes par la tâche planifiée créée par install-windows.ps1.
 # Peut aussi être lancé à la main : clic droit > Exécuter avec PowerShell.
 
