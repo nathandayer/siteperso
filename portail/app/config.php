@@ -25,7 +25,7 @@ function cfg(string $name, mixed $value): void
 cfg('SITE_NAME',    'Nathan Dayer');
 cfg('SITE_TAGLINE', 'Vidéaste');
 cfg('OWNER_URL',    'https://nathandayer.ch');   // où renvoyer quelqu'un qui arrive à la racine
-cfg('WHATSAPP',     '');                          // ex. '41791234567'. Vide = bouton masqué.
+cfg('WHATSAPP',     '41774257761');               // format international sans +. Vide = bouton masqué.
 
 // Page de gestion : clients.nathandayer.ch/admin
 cfg('ADMIN_PASSWORD', 'change-moi');
