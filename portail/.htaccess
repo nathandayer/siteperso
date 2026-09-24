@@ -1,0 +1,8 @@
+# Filet de sécurité : si la racine du site pointe ici au lieu de public/,
+# tout est redirigé vers public/ en interne. clients/ et private/ restent refusés par leur .htaccess.
+Options -Indexes
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
