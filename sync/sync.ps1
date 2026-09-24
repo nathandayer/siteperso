@@ -58,7 +58,7 @@ $rules = @('.*', '**/.*', 'Thumbs.db', 'desktop.ini', '*.tmp', '*.part', '*.crdo
 [System.IO.File]::WriteAllText((Join-Path $local '_sync.txt'), (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), (New-Object System.Text.UTF8Encoding($false)))
 
 # --- Synchro ---
-$args = @(
+$rcArgs = @(
     'sync', $local, $remote,
     '--exclude-from', $excludeFile,
     '--max-delete', '200',
@@ -71,7 +71,7 @@ $args = @(
 if ($young.Count -gt 0) { Log "$($young.Count) fichier(s) encore en cours d'export, repoussés à la prochaine fois." }
 Log "Synchro $local -> $remote"
 $ErrorActionPreference = 'Continue'   # rclone parle sur la sortie d'erreur, ce n'est pas une erreur PowerShell
-& $rclone @args 2>&1 | Out-Null
+& $rclone @rcArgs 2>&1 | Out-Null
 $code = $LASTEXITCODE
 if ($code -eq 0) { Log "OK" } else { Log "rclone a terminé avec le code $code (voir les lignes ci-dessus)" }
 exit $code

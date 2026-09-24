@@ -35,7 +35,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Déploiement de $src -> portail:/"
-$args = @(
+$rcArgs = @(
     'sync', $src, 'portail:/',
     '--exclude', '/clients/**',
     '--exclude', '/private/**',
@@ -46,7 +46,7 @@ $args = @(
     '--transfers', '4', '--retries', '3',
     '--stats-one-line', '--stats', '0', '--log-level', 'NOTICE'
 )
-& $rclone @args 2>&1
+& $rclone @rcArgs 2>&1
 if ($LASTEXITCODE -eq 0) {
     Write-Host 'Déployé. Vérifie https://client.nathandayer.ch/admin' -ForegroundColor Green
 } else {
